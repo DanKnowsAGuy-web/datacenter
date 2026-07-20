@@ -264,6 +264,19 @@
     go(0, false);
   }
 
+  /* ---------- the SunCore turntable: rotates only while on stage ----------
+     The file is baked forward-then-reverse (no browser can play video
+     backwards), so the loop seam is invisible; half speed stretches the
+     8s rotation into a ~32s sweep. */
+  const turn = document.querySelector(".kit__flag video");
+  if (turn && !reduced && "IntersectionObserver" in window) {
+    turn.playbackRate = 0.5;
+    new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { const p = turn.play(); if (p) p.catch(() => {}); }
+      else turn.pause();
+    }), { threshold: 0.25 }).observe(turn);
+  }
+
   /* ---------- the film: the facade becomes the player, in place ---------- */
   const filmFacade = document.querySelector("[data-film-inline]");
   if (filmFacade) {
